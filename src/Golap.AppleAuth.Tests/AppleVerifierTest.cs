@@ -4,8 +4,8 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Golap.AppleAuth.Entities;
 using Golap.AppleAuth.Exceptions;
-using Golap.AppleAuth.Models;
 using Golap.AppleAuth.Tests.Core;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
@@ -36,7 +36,7 @@ namespace Golap.AppleAuth.Tests
 
             #endregion
 
-            var appleResponse = new AppleKeys { Keys = new[] { new JsonWebKey(jsonKey) } };
+            var appleResponse = new AppleKeysResponse { Keys = new[] { new JsonWebKey(jsonKey) } };
             var handlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.OK,
@@ -54,7 +54,7 @@ namespace Golap.AppleAuth.Tests
         public async Task ValidateAsync_NotValidSignature_ThrowSecurityTokenInvalidSignatureException()
         {
             var jwtToken = GetInvalidJwtToken();
-            var appleResponse = new AppleKeys { Keys = new[] { new JsonWebKey(JsonKey) } };
+            var appleResponse = new AppleKeysResponse { Keys = new[] { new JsonWebKey(JsonKey) } };
             var handlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.OK,
@@ -67,10 +67,10 @@ namespace Golap.AppleAuth.Tests
         }
 
         [Fact]
-        public async Task ValidateAsync_AppleDoenstReturnKid_AppleAuthException()
+        public async Task ValidateAsync_AppleDoenstReturnKid_ThrowAppleAuthException()
         {
             var jwtToken = GetInvalidJwtToken();
-            var appleResponse = new AppleKeys();
+            var appleResponse = new AppleKeysResponse();
             var handlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
             {
                 StatusCode = HttpStatusCode.OK,
@@ -82,17 +82,16 @@ namespace Golap.AppleAuth.Tests
             await FluentActions.Invoking(() => verifier.ValidateAsync(jwtToken)).Should().ThrowAsync<AppleAuthException>();
         }
 
-        [Theory]
-        [InlineData(null, "")]
-        [InlineData("error", "error")]
-        public async Task ValidateAsync_AppleReturnError_AppleAuthException(string responseData, string messageException)
+        [Fact]
+        public async Task ValidateAsync_AppleReturnError_ThrowAppleAuthException()
         {
+            var responseData = "error";
             var jwtToken = GetInvalidJwtToken();
-            var handlerStub = new DelegatingHandlerStub(new HttpResponseMessage() { StatusCode = HttpStatusCode.BadRequest, Content = responseData == null ? null : new StringContent(responseData) });
+            var handlerStub = new DelegatingHandlerStub(new HttpResponseMessage() { StatusCode = HttpStatusCode.BadRequest, Content = new StringContent(responseData) });
             var client = new HttpClient(handlerStub);
             var verifier = new AppleVerifier(client);
 
-            await FluentActions.Invoking(() => verifier.ValidateAsync(jwtToken)).Should().ThrowAsync<AppleAuthException>().WithMessage(messageException);
+            await FluentActions.Invoking(() => verifier.ValidateAsync(jwtToken)).Should().ThrowAsync<AppleAuthException>().WithMessage(responseData);
         }
 
         private string GetInvalidJwtToken() =>

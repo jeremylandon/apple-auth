@@ -11,7 +11,7 @@ namespace Golap.AppleAuth
     /// <summary>
     /// Creates JWT tokens based on Apple informations
     /// </summary>
-    internal class AppleTokenGenerator : IAppleTokenGenerator
+    public class AppleTokenGenerator : IAppleTokenGenerator
     {
         private readonly string _teamId;
         private readonly string _clientId;

@@ -5,8 +5,8 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Dawn;
+using Golap.AppleAuth.Entities;
 using Golap.AppleAuth.Exceptions;
-using Golap.AppleAuth.Models;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Golap.AppleAuth
@@ -39,10 +39,10 @@ namespace Golap.AppleAuth
             var response = await _httpClient.GetAsync(ApplePublicKeysEndpoint);
             if (!response.IsSuccessStatusCode)
             {
-                throw new AppleAuthException(response?.Content == null ? "" : await response.Content.ReadAsStringAsync());
+                throw new AppleAuthException(await response.Content.ReadAsStringAsync());
             }
 
-            var applePublicKeys = await JsonSerializer.DeserializeAsync<AppleKeys>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var applePublicKeys = await JsonSerializer.DeserializeAsync<AppleKeysResponse>(await response.Content.ReadAsStreamAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             var kid = new JwtSecurityTokenHandler().ReadJwtToken(token).Header.Kid;
             var publicKey = applePublicKeys?.Keys?.FirstOrDefault(key => key.Kid == kid);
             if (publicKey == null)

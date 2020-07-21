@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Dawn;
+﻿using Dawn;
 using Golap.AppleAuth.Utils;
 
 namespace Golap.AppleAuth.Entities
