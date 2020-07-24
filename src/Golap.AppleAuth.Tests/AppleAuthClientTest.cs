@@ -50,7 +50,7 @@ namespace Golap.AppleAuth.Tests
         }
 
         [Fact]
-        public async Task ValidateAsync_AppleDoenstReturnKid_AppleAuthException()
+        public async Task GetAccessTokenAsync_ReturnAccessToken()
         {
             _appleTokenGeneratorMock.Setup(e => e.Generate(It.IsAny<TimeSpan>())).Returns("abc");
             var response = AutoFaker.Generate<AppleAccessToken>();
@@ -74,6 +74,33 @@ namespace Golap.AppleAuth.Tests
             var client = GetClient(handlerStub);
 
             await FluentActions.Invoking(() => client.GetAccessTokenAsync("abc")).Should().ThrowAsync<AppleAuthException>().WithMessage(responseData);
+        }
+
+        [Fact]
+        public async Task GetRefreshTokenAsync_ReturnAccessToken()
+        {
+            _appleTokenGeneratorMock.Setup(e => e.Generate(It.IsAny<TimeSpan>())).Returns("abc");
+            var response = AutoFaker.Generate<AppleAccessToken>();
+            var handlerStub = new DelegatingHandlerStub(new HttpResponseMessage()
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(JsonSerializer.Serialize(response, new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })),
+                });
+            var client = GetClient(handlerStub);
+
+            var result = await client.GetRefreshTokenAsync("abc");
+
+            result.Should().BeEquivalentTo(response);
+        }
+
+        [Fact]
+        public async Task GetRefreshTokenAsync_AppleReturnError_ThrowAppleAuthException()
+        {
+            var responseData = "error";
+            var handlerStub = new DelegatingHandlerStub(new HttpResponseMessage() { StatusCode = HttpStatusCode.BadRequest, Content = new StringContent(responseData) });
+            var client = GetClient(handlerStub);
+
+            await FluentActions.Invoking(() => client.GetRefreshTokenAsync("abc")).Should().ThrowAsync<AppleAuthException>().WithMessage(responseData);
         }
 
         private AppleAuthClient GetClient(DelegatingHandler handler)

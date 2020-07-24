@@ -58,6 +58,20 @@ namespace Golap.AppleAuth
             return await InternalPostAuthTokenRequestAsync(body);
         }
 
+        public async Task<AppleAccessToken> GetRefreshTokenAsync(string refreshToken)
+        {
+            var body = new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("grant_type", "refresh_token"),
+                    new KeyValuePair<string, string>("refresh_token", refreshToken),
+                    new KeyValuePair<string, string>("redirect_uri", _authSetting.RedirectUri),
+                    new KeyValuePair<string, string>("client_id", _authSetting.ClientId),
+                    new KeyValuePair<string, string>("client_secret",_tokenGenerator.Generate()),
+                };
+
+            return await InternalPostAuthTokenRequestAsync(body);
+        }
+
         private async Task<AppleAccessToken> InternalPostAuthTokenRequestAsync(IEnumerable<KeyValuePair<string, string>> requestBody)
         {
             var response = await _httpClient.PostAsync(AppleAuthTokenEndpoint, new FormUrlEncodedContent(requestBody));
