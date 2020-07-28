@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
 using Dawn;
 using Golap.AppleAuth.Entities;
 using Golap.AppleAuth.Exceptions;
+using Golap.AppleAuth.Utils;
 
 namespace Golap.AppleAuth
 {
@@ -42,6 +46,29 @@ namespace Golap.AppleAuth
 
             _httpClient = httpClient;
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+        }
+
+        public Uri CreateLoginUri()
+        {
+            var queryParams = new NameValueCollection
+                {
+                    ["response_type"] = "code id_token",
+                    ["client_id"] = _authSetting.ClientId,
+                    ["redirect_uri"] = _authSetting.RedirectUri,
+                    ["state"] = RandomUtils.CreateHexString(15),
+                    ["scope"] = _authSetting.Scope,
+                    ["response_mode"] = "form_post"
+                };
+            var uriBuilder = new UriBuilder("https://appleid.apple.com/auth/authorize")
+                {
+                    Query = string.Join("&", (
+                        from key in queryParams.AllKeys
+                        from value in queryParams.GetValues(key)
+                        select $"{HttpUtility.UrlEncode(key)}={HttpUtility.UrlEncode(value)}"
+                    ).ToArray())
+            };
+
+            return uriBuilder.Uri;
         }
 
         public async Task<AppleAccessToken> GetAccessTokenAsync(string code)
