@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Golap.AppleAuth\Golap.AppleAuth.csproj" />
+    <ProjectReference Include="..\..\src\Golap.AppleAuth\Golap.AppleAuth.csproj" />
   </ItemGroup>
 
   <ItemGroup>
