@@ -29,7 +29,7 @@ namespace Golap.AppleAuth
         /// </summary>
         public AppleVerifier(HttpClient httpClient)
         {
-            _httpClient = httpClient;
+            _httpClient = Guard.Argument(httpClient, nameof(httpClient)).NotNull();
         }
 
         public async Task<SecurityToken> ValidateAsync(string token)

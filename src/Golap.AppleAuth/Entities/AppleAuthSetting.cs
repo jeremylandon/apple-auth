@@ -1,4 +1,6 @@
-﻿namespace Golap.AppleAuth.Entities
+﻿using Dawn;
+
+namespace Golap.AppleAuth.Entities
 {
     /// <summary>
     /// Configuration of <see cref="AppleAuthClient"/> 
@@ -31,9 +33,9 @@
         /// <param name="scope">The scope of information you want to get from the user</param>
         public AppleAuthSetting(string teamId, string clientId, string redirectUri, string scope = null)
         {
-            TeamId = teamId;
-            ClientId = clientId;
-            RedirectUri = redirectUri;
+            TeamId = Guard.Argument(teamId, nameof(teamId)).NotNull().NotWhiteSpace();
+            ClientId = Guard.Argument(clientId, nameof(clientId)).NotNull().NotWhiteSpace();
+            RedirectUri = Guard.Argument(redirectUri, nameof(redirectUri)).NotNull().NotWhiteSpace();
             Scope = scope;
         }
     }

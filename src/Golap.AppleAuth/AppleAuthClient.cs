@@ -17,9 +17,25 @@ namespace Golap.AppleAuth
     public class AppleAuthClient : IAppleAuthClient, IDisposable
     {
         private const string AppleAuthTokenEndpoint = "https://appleid.apple.com/auth/token";
+        private const string AppleAuthAuthorizeEndpoint = "https://appleid.apple.com/auth/authorize";
         private readonly IAppleTokenGenerator _tokenGenerator;
         private readonly AppleAuthSetting _authSetting;
         private readonly HttpClient _httpClient;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AppleTokenGenerator"/> class.
+        /// </summary>
+        /// <param name="authSetting">Your subscription identifier present in the membership section in your apple developer account</param>
+        /// <param name="appleKeySetting">Informations of the key created for the "Sign in with Apple" feature</param>
+        public AppleAuthClient(AppleAuthSetting authSetting, AppleKeySetting appleKeySetting) : this(authSetting, new AppleTokenGenerator(authSetting.TeamId, authSetting.ClientId, appleKeySetting), new HttpClient()) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AppleTokenGenerator"/> class.
+        /// </summary>
+        /// <param name="authSetting">Your subscription identifier present in the membership section in your apple developer account</param>
+        /// <param name="appleKeySetting">Informations of the key created for the "Sign in with Apple" feature</param>
+        /// <param name="httpClient"></param>
+        public AppleAuthClient(AppleAuthSetting authSetting, AppleKeySetting appleKeySetting, HttpClient httpClient) : this(authSetting, new AppleTokenGenerator(authSetting.TeamId, authSetting.ClientId, appleKeySetting), httpClient) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppleTokenGenerator"/> class.
@@ -37,14 +53,9 @@ namespace Golap.AppleAuth
         /// <param name="httpClient"></param>
         public AppleAuthClient(AppleAuthSetting authSetting, IAppleTokenGenerator tokenGenerator, HttpClient httpClient)
         {
-            Guard.Argument(authSetting, nameof(authSetting)).NotNull();
-            Guard.Argument(tokenGenerator, nameof(tokenGenerator)).NotNull();
-            Guard.Argument(httpClient, nameof(httpClient)).NotNull();
-
-            _authSetting = authSetting;
-            _tokenGenerator = tokenGenerator;
-
-            _httpClient = httpClient;
+            _authSetting = Guard.Argument(authSetting, nameof(authSetting)).NotNull();
+            _tokenGenerator = Guard.Argument(tokenGenerator, nameof(tokenGenerator)).NotNull().Value;
+            _httpClient = Guard.Argument(httpClient, nameof(httpClient)).NotNull();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
         }
 
@@ -59,19 +70,19 @@ namespace Golap.AppleAuth
                     ["scope"] = _authSetting.Scope,
                     ["response_mode"] = "form_post"
                 };
-            var uriBuilder = new UriBuilder("https://appleid.apple.com/auth/authorize")
+            var uriBuilder = new UriBuilder(AppleAuthAuthorizeEndpoint)
                 {
                     Query = string.Join("&", (
                         from key in queryParams.AllKeys
                         from value in queryParams.GetValues(key)
                         select $"{HttpUtility.UrlEncode(key)}={HttpUtility.UrlEncode(value)}"
                     ).ToArray())
-            };
+                };
 
             return uriBuilder.Uri;
         }
 
-        public async Task<AppleAccessToken> GetAccessTokenAsync(string code)
+        public Task<AppleAccessToken> GetAccessTokenAsync(string code)
         {
             var body = new List<KeyValuePair<string, string>>
                 {
@@ -82,10 +93,10 @@ namespace Golap.AppleAuth
                     new KeyValuePair<string, string>("client_secret",_tokenGenerator.Generate()),
                 };
 
-            return await InternalPostAuthTokenRequestAsync(body);
+            return InternalPostAuthTokenRequestAsync(body);
         }
 
-        public async Task<AppleAccessToken> GetRefreshTokenAsync(string refreshToken)
+        public Task<AppleAccessToken> GetRefreshTokenAsync(string refreshToken)
         {
             var body = new List<KeyValuePair<string, string>>
                 {
@@ -96,7 +107,7 @@ namespace Golap.AppleAuth
                     new KeyValuePair<string, string>("client_secret",_tokenGenerator.Generate()),
                 };
 
-            return await InternalPostAuthTokenRequestAsync(body);
+            return InternalPostAuthTokenRequestAsync(body);
         }
 
         private async Task<AppleAccessToken> InternalPostAuthTokenRequestAsync(IEnumerable<KeyValuePair<string, string>> requestBody)

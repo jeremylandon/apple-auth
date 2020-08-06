@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using Dawn;
 using Golap.AppleAuth.Entities;
 using Microsoft.IdentityModel.Tokens;
 
@@ -26,9 +27,9 @@ namespace Golap.AppleAuth
         /// <param name="setting">Informations of the key that you are created for "Sign in with Apple"</param>
         public AppleTokenGenerator(string teamId, string clientId, AppleKeySetting setting)
         {
-            _teamId = teamId;
-            _clientId = clientId;
-            _setting = setting;
+            _teamId = Guard.Argument(teamId, nameof(teamId)).NotNull().NotWhiteSpace();
+            _clientId = Guard.Argument(clientId, nameof(clientId)).NotNull().NotWhiteSpace();
+            _setting = Guard.Argument(setting, nameof(setting)).NotNull();
         }
 
         public string Generate()

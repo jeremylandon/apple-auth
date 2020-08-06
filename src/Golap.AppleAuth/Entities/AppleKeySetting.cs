@@ -29,11 +29,8 @@ namespace Golap.AppleAuth.Entities
         /// <param name="privateKey">The contents of service key</param>
         public AppleKeySetting(string keyId, string privateKey)
         {
-            Guard.Argument(keyId, nameof(keyId)).NotNull().NotWhiteSpace();
-            Guard.Argument(privateKey, nameof(privateKey)).NotNull().NotWhiteSpace();
-
-            KeyId = keyId;
-            PrivateKey = privateKey;
+            KeyId = Guard.Argument(keyId, nameof(keyId)).NotNull().NotWhiteSpace();
+            PrivateKey = Guard.Argument(privateKey, nameof(privateKey)).NotNull().NotWhiteSpace();
         }
     }
 }
