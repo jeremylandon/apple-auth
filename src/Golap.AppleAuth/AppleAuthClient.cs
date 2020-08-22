@@ -59,7 +59,7 @@ namespace Golap.AppleAuth
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
         }
 
-        public Uri CreateLoginUri()
+        public Uri LoginUri()
         {
             var queryParams = new NameValueCollection
                 {
@@ -82,7 +82,7 @@ namespace Golap.AppleAuth
             return uriBuilder.Uri;
         }
 
-        public Task<AppleAccessToken> GetAccessTokenAsync(string code)
+        public Task<AppleAccessToken> AccessTokenAsync(string code)
         {
             var body = new List<KeyValuePair<string, string>>
                 {
@@ -96,7 +96,7 @@ namespace Golap.AppleAuth
             return InternalPostAuthTokenRequestAsync(body);
         }
 
-        public Task<AppleAccessToken> GetRefreshTokenAsync(string refreshToken)
+        public Task<AppleAccessToken> RefreshTokenAsync(string refreshToken)
         {
             var body = new List<KeyValuePair<string, string>>
                 {

@@ -50,13 +50,13 @@ namespace Golap.AppleAuth.Tests
         }
 
         [Fact]
-        public void CreateLoginUri_CreateWithRightQuery()
+        public void LoginUri_CreateWithRightQuery()
         {
             var handlerStub = new DelegatingHandlerStub(null);
             var settings = new AppleAuthSetting("a", "b", "https://apple.com", "x y z");
             var client = GetClient(settings, handlerStub);
 
-            var result = client.CreateLoginUri();
+            var result = client.LoginUri();
             var query = System.Web.HttpUtility.ParseQueryString(result.Query);
 
             query.AllKeys.Should().BeEquivalentTo("response_type", "client_id", "redirect_uri", "state", "scope", "response_mode");
@@ -69,14 +69,14 @@ namespace Golap.AppleAuth.Tests
         }
 
         [Fact]
-        public void CreateLoginUri_CreateAlwaysANewState()
+        public void LoginUri_CreateAlwaysANewState()
         {
             var handlerStub = new DelegatingHandlerStub(null);
             var settings = new AppleAuthSetting("a", "b", "https://apple.com", "x y z");
             var client = GetClient(settings, handlerStub);
 
-            var result1 =  client.CreateLoginUri();
-            var result2 = client.CreateLoginUri();
+            var result1 =  client.LoginUri();
+            var result2 = client.LoginUri();
 
             var query1 = System.Web.HttpUtility.ParseQueryString(result1.Query);
             var query2 = System.Web.HttpUtility.ParseQueryString(result2.Query);
@@ -85,7 +85,7 @@ namespace Golap.AppleAuth.Tests
         }
 
         [Fact]
-        public async Task GetAccessTokenAsync_ReturnAccessToken()
+        public async Task AccessTokenAsync_ReturnAccessToken()
         {
             _appleTokenGeneratorMock.Setup(e => e.Generate(It.IsAny<TimeSpan>())).Returns("abc");
             var response = AutoFaker.Generate<AppleAccessToken>();
@@ -96,23 +96,23 @@ namespace Golap.AppleAuth.Tests
             });
             var client = GetClient(AutoFaker.Generate<AppleAuthSetting>(), handlerStub);
 
-            var result = await client.GetAccessTokenAsync("abc");
+            var result = await client.AccessTokenAsync("abc");
 
             result.Should().BeEquivalentTo(response);
         }
 
         [Fact]
-        public async Task GetAccessTokenAsync_AppleReturnError_ThrowAppleAuthException()
+        public async Task AccessTokenAsync_AppleReturnError_ThrowAppleAuthException()
         {
             var responseData = "error";
             var handlerStub = new DelegatingHandlerStub(new HttpResponseMessage() { StatusCode = HttpStatusCode.BadRequest, Content = new StringContent(responseData) });
             var client = GetClient(AutoFaker.Generate<AppleAuthSetting>(), handlerStub);
 
-            await FluentActions.Invoking(() => client.GetAccessTokenAsync("abc")).Should().ThrowAsync<AppleAuthException>().WithMessage(responseData);
+            await FluentActions.Invoking(() => client.AccessTokenAsync("abc")).Should().ThrowAsync<AppleAuthException>().WithMessage(responseData);
         }
 
         [Fact]
-        public async Task GetRefreshTokenAsync_ReturnAccessToken()
+        public async Task RefreshTokenAsync_ReturnAccessToken()
         {
             _appleTokenGeneratorMock.Setup(e => e.Generate(It.IsAny<TimeSpan>())).Returns("abc");
             var response = AutoFaker.Generate<AppleAccessToken>();
@@ -123,19 +123,19 @@ namespace Golap.AppleAuth.Tests
                 });
             var client = GetClient(AutoFaker.Generate<AppleAuthSetting>(), handlerStub);
 
-            var result = await client.GetRefreshTokenAsync("abc");
+            var result = await client.RefreshTokenAsync("abc");
 
             result.Should().BeEquivalentTo(response);
         }
 
         [Fact]
-        public async Task GetRefreshTokenAsync_AppleReturnError_ThrowAppleAuthException()
+        public async Task RefreshTokenAsync_AppleReturnError_ThrowAppleAuthException()
         {
             var responseData = "error";
             var handlerStub = new DelegatingHandlerStub(new HttpResponseMessage() { StatusCode = HttpStatusCode.BadRequest, Content = new StringContent(responseData) });
             var client = GetClient(AutoFaker.Generate<AppleAuthSetting>(), handlerStub);
 
-            await FluentActions.Invoking(() => client.GetRefreshTokenAsync("abc")).Should().ThrowAsync<AppleAuthException>().WithMessage(responseData);
+            await FluentActions.Invoking(() => client.RefreshTokenAsync("abc")).Should().ThrowAsync<AppleAuthException>().WithMessage(responseData);
         }
 
         private AppleAuthClient GetClient(AppleAuthSetting appleAuthSetting, DelegatingHandler handler)
