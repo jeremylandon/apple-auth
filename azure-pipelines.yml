@@ -34,9 +34,7 @@ steps:
   displayName: 'nuget push'
   inputs:
     command: 'push'
-    feedsToUse: 'select'
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
     nuGetFeedType: 'internal'
-    publishVstsFeed: 'TestFeed'
-    versioningScheme: 'off'
+    publishVstsFeed: '23a65352-c39a-4842-88c1-547ae53acd9f/9dbb8a3a-7d26-42f0-8fcf-440cd1eb0871'
     allowPackageConflicts: true
