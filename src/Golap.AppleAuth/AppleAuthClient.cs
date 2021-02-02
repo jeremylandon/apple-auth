@@ -62,22 +62,22 @@ namespace Golap.AppleAuth
         public Uri LoginUri()
         {
             var queryParams = new NameValueCollection
-                {
-                    ["response_type"] = "code id_token",
-                    ["client_id"] = _authSetting.ClientId,
-                    ["redirect_uri"] = _authSetting.RedirectUri,
-                    ["state"] = RandomUtils.CreateHexString(15),
-                    ["scope"] = _authSetting.Scope,
-                    ["response_mode"] = "form_post"
-                };
+            {
+                ["response_type"] = "code id_token",
+                ["client_id"] = _authSetting.ClientId,
+                ["redirect_uri"] = _authSetting.RedirectUri,
+                ["state"] = RandomUtils.CreateHexString(15),
+                ["scope"] = _authSetting.Scope,
+                ["response_mode"] = "form_post"
+            };
             var uriBuilder = new UriBuilder(AppleAuthAuthorizeEndpoint)
-                {
-                    Query = string.Join("&", (
+            {
+                Query = string.Join("&", (
                         from key in queryParams.AllKeys
                         from value in queryParams.GetValues(key)
                         select $"{HttpUtility.UrlEncode(key)}={HttpUtility.UrlEncode(value)}"
                     ).ToArray())
-                };
+            };
 
             return uriBuilder.Uri;
         }
@@ -88,9 +88,9 @@ namespace Golap.AppleAuth
                 {
                     new KeyValuePair<string, string>("grant_type", "authorization_code"),
                     new KeyValuePair<string, string>("code", code),
-                    new KeyValuePair<string, string>("redirect_uri", this._authSetting.RedirectUri),
-                    new KeyValuePair<string, string>("client_id", this._authSetting.ClientId),
-                    new KeyValuePair<string, string>("client_secret",_tokenGenerator.Generate()),
+                    new KeyValuePair<string, string>("redirect_uri", _authSetting.RedirectUri),
+                    new KeyValuePair<string, string>("client_id", _authSetting.ClientId),
+                    new KeyValuePair<string, string>("client_secret", _tokenGenerator.Generate()),
                 };
 
             return InternalPostAuthTokenRequestAsync(body);
@@ -104,7 +104,7 @@ namespace Golap.AppleAuth
                     new KeyValuePair<string, string>("refresh_token", refreshToken),
                     new KeyValuePair<string, string>("redirect_uri", _authSetting.RedirectUri),
                     new KeyValuePair<string, string>("client_id", _authSetting.ClientId),
-                    new KeyValuePair<string, string>("client_secret",_tokenGenerator.Generate()),
+                    new KeyValuePair<string, string>("client_secret", _tokenGenerator.Generate()),
                 };
 
             return InternalPostAuthTokenRequestAsync(body);

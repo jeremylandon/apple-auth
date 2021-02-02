@@ -9,7 +9,6 @@ namespace Golap.AppleAuth
         /// </summary>
         string Generate();
 
-
         /// <summary>
         /// Generates a JWT token
         /// </summary>

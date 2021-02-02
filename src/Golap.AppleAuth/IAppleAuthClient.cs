@@ -10,10 +10,12 @@ namespace Golap.AppleAuth
         /// Generates the Login URI
         /// </summary>
         Uri LoginUri();
+
         /// <summary>
         /// Get the access token from the server based on the grant code returned by Apple
         /// </summary>
         Task<AppleAccessToken> AccessTokenAsync(string code);
+
         /// <summary>
         /// Get the access token from the server based on the refresh token returned by Apple
         /// </summary>

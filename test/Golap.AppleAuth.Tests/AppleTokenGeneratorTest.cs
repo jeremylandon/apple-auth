@@ -27,7 +27,7 @@ namespace Golap.AppleAuth.Tests
             var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
             jwtToken.Issuer.Should().Be(_teamId);
             jwtToken.Subject.Should().Be(_clientId);
-            jwtToken.Audiences.Should().HaveCount(1).And.Contain("https://appleid.apple.com");
+            jwtToken.Audiences.Should().HaveCount(1).And.Contain(AppleJwtSettings.Audience);
         }
 
         [Fact]
@@ -57,7 +57,7 @@ namespace Golap.AppleAuth.Tests
         }
 
         /// <summary>
-        /// prevent <see cref="System.ObjectDisposedException"/>
+        /// prevent <see cref="ObjectDisposedException"/>
         /// </summary>
         [Fact]
         public async Task Generate_CanBeRunMultipleTimes()
@@ -75,7 +75,7 @@ namespace Golap.AppleAuth.Tests
         private Task<string> GetValidKeyP8ContentAsync()
         {
             // generated from https://8gwifi.org/
-            return File.ReadAllTextAsync("Files/key.p8");
+            return File.ReadAllTextAsync("Files/fake-key.p8");
         }
 
         private AppleTokenGenerator CreateClient(AppleKeySetting keySetting = null)

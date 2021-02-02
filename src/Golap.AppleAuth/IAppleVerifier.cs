@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Golap.AppleAuth
@@ -9,6 +8,6 @@ namespace Golap.AppleAuth
         /// <summary>
         /// Validates a Apple-issued Json Web Token (JWT). Thrown an exception if the token can't be validated.
         /// </summary>
-        Task<SecurityToken> ValidateAsync(string token);
+        Task<SecurityToken> ValidateAsync(string token, string clientId);
     }
 }

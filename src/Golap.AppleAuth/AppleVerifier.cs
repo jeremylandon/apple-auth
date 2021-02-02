@@ -32,9 +32,10 @@ namespace Golap.AppleAuth
             _httpClient = Guard.Argument(httpClient, nameof(httpClient)).NotNull();
         }
 
-        public async Task<SecurityToken> ValidateAsync(string token)
+        public async Task<SecurityToken> ValidateAsync(string token, string clientId)
         {
             Guard.Argument(token, nameof(token)).NotNull().NotWhiteSpace().Matches(@"^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$");
+            Guard.Argument(clientId, nameof(clientId)).NotNull().NotWhiteSpace();
 
             var response = await _httpClient.GetAsync(ApplePublicKeysEndpoint);
             if (!response.IsSuccessStatusCode)
@@ -54,8 +55,8 @@ namespace Golap.AppleAuth
             var validationParameters = new TokenValidationParameters
             {
                 IssuerSigningKey = publicKey,
-                ValidateAudience = false,
-                ValidateIssuer = false,
+                ValidIssuer = AppleJwtSettings.Audience,
+                ValidAudience = clientId
             };
 
             tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
