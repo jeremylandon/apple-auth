@@ -38,7 +38,6 @@ namespace Golap.AppleAuth
 
         public string Generate(TimeSpan expireInInterval)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
             var signingFactory = new CryptoProviderFactory { CacheSignatureProviders = false };
             using var algorithm = ECDsa.Create();
             // ReSharper disable once PossibleNullReferenceException
@@ -64,7 +63,7 @@ namespace Golap.AppleAuth
                         }
             };
 
-            return tokenHandler.CreateEncodedJwt(token);
+            return new JwtSecurityTokenHandler().CreateEncodedJwt(token);
         }
     }
 }
