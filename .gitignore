@@ -360,3 +360,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/sample/Golap.AppleAuth.Sample/Files/key.p8
+/sample/Golap.AppleAuth.Sample/appsettings.json
