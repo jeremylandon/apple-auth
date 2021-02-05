@@ -1,13 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<Authors>Jeremy Landon</Authors>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/Golapadeog/apple-auth</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Golapadeog/apple-auth</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<Description>Sign in with Apple for .NET</Description>
+		<Product />
+		<Company />
+		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);</TargetsForTfmSpecificBuildOutput>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Dawn.Guard" Version="1.12.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
-    <PackageReference Include="System.Text.Json" Version="4.7.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Dawn.Guard" Version="1.12.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
+		<PackageReference Include="System.Text.Json" Version="4.7.2" />
+	</ItemGroup>
 
 </Project>
