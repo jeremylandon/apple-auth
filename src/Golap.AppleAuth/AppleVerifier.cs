@@ -12,6 +12,9 @@ using Microsoft.IdentityModel.Tokens;
 namespace Golap.AppleAuth
 {
     /// <summary>
+    /// An implementation of <see cref="IAppleVerifier"/> to validate JWT Tokens send by apple during authentication
+    /// </summary>
+    /// <summary>
     /// Validates the JWT Tokens send by apple during authentication
     /// </summary>
     public class AppleVerifier : IAppleVerifier, IDisposable
@@ -32,6 +35,7 @@ namespace Golap.AppleAuth
             _httpClient = Guard.Argument(httpClient, nameof(httpClient)).NotNull();
         }
 
+        /// <inheritdoc/>
         public async Task<SecurityToken> ValidateAsync(string token, string clientId)
         {
             Guard.Argument(token, nameof(token)).NotNull().NotWhiteSpace().Matches(@"^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$");
@@ -64,6 +68,7 @@ namespace Golap.AppleAuth
             return validatedToken;
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             _httpClient?.Dispose();

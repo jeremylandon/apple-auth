@@ -14,6 +14,9 @@ using Golap.AppleAuth.Utils;
 
 namespace Golap.AppleAuth
 {
+    /// <summary>
+    /// An implementation of <see cref="IAppleAuthClient"/> to interact with the Apple OAuth
+    /// </summary>
     public class AppleAuthClient : IAppleAuthClient, IDisposable
     {
         private const string AppleAuthTokenEndpoint = "https://appleid.apple.com/auth/token";
@@ -59,6 +62,7 @@ namespace Golap.AppleAuth
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
         }
 
+        /// <inheritdoc/>
         public Uri GetLoginUri()
         {
             var queryParams = new NameValueCollection
@@ -82,6 +86,7 @@ namespace Golap.AppleAuth
             return uriBuilder.Uri;
         }
 
+        /// <inheritdoc/>
         public Task<AppleAccessToken> GetAccessTokenAsync(string code)
         {
             var body = new List<KeyValuePair<string, string>>
@@ -96,6 +101,7 @@ namespace Golap.AppleAuth
             return InternalPostAuthTokenRequestAsync(body);
         }
 
+        /// <inheritdoc/>
         public Task<AppleAccessToken> RefreshTokenAsync(string refreshToken)
         {
             var body = new List<KeyValuePair<string, string>>
@@ -124,6 +130,7 @@ namespace Golap.AppleAuth
             });
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             _httpClient.Dispose();

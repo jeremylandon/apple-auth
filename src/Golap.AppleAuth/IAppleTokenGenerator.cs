@@ -2,6 +2,9 @@
 
 namespace Golap.AppleAuth
 {
+    /// <summary>
+    /// Create JWT tokens based on Apple informations
+    /// </summary>
     public interface IAppleTokenGenerator
     {
         /// <summary>

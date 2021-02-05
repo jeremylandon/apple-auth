@@ -9,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Golap.AppleAuth
 {
     /// <summary>
-    /// Creates JWT tokens based on Apple informations
+    /// An implementation of <see cref="IAppleTokenGenerator"/> to create JWT tokens based on Apple informations
     /// </summary>
     public class AppleTokenGenerator : IAppleTokenGenerator
     {
@@ -31,11 +31,13 @@ namespace Golap.AppleAuth
             _setting = Guard.Argument(setting, nameof(setting)).NotNull();
         }
 
+        /// <inheritdoc/>
         public string Generate()
         {
             return Generate(_defaultExpireInInterval);
         }
 
+        /// <inheritdoc/>
         public string Generate(TimeSpan expireInInterval)
         {
             var signingFactory = new CryptoProviderFactory { CacheSignatureProviders = false };
