@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Security.Cryptography;
 using Dawn;
 using Golap.AppleAuth.Entities;
@@ -10,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace Golap.AppleAuth
 {
     /// <summary>
-    /// Creates JWT tokens based on Apple informations
+    /// An implementation of <see cref="IAppleTokenGenerator"/> to create JWT tokens based on Apple informations
     /// </summary>
     public class AppleTokenGenerator : IAppleTokenGenerator
     {
@@ -32,36 +31,41 @@ namespace Golap.AppleAuth
             _setting = Guard.Argument(setting, nameof(setting)).NotNull();
         }
 
+        /// <inheritdoc/>
         public string Generate()
         {
             return Generate(_defaultExpireInInterval);
         }
 
+        /// <inheritdoc/>
         public string Generate(TimeSpan expireInInterval)
         {
-            using var cngKey = CngKey.Import(Convert.FromBase64String(_setting.PrivateKeyBody), CngKeyBlobFormat.Pkcs8PrivateBlob);
-            using var algorithm = new ECDsaCng(cngKey) { HashAlgorithm = CngAlgorithm.ECDsaP256 };
-            var signingCredentials = new SigningCredentials(new ECDsaSecurityKey(algorithm), SecurityAlgorithms.EcdsaSha256)
+            var signingFactory = new CryptoProviderFactory { CacheSignatureProviders = false };
+            using var algorithm = ECDsa.Create();
+            // ReSharper disable once PossibleNullReferenceException
+            algorithm.ImportPkcs8PrivateKey(Convert.FromBase64String(_setting.PrivateKeyBody), out _);
+            var credentials = new SigningCredentials(new ECDsaSecurityKey(algorithm)
             {
-                // prevent ObjectDisposedException exception when this method it's called multiple times
-                CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false }
-            };
+                KeyId = _setting.KeyId,
+                CryptoProviderFactory = signingFactory
+            }, SecurityAlgorithms.EcdsaSha256);
 
             var now = DateTime.UtcNow;
             var exp = now.Add(expireInInterval);
-            var token = new JwtSecurityToken(
-                claims: new List<Claim>
-                    {
-                           new Claim("iss", _teamId),
-                           new Claim("sub", _clientId),
-                           new Claim("aud", "https://appleid.apple.com"),
-                           new Claim("iat", EpochTime.GetIntDate(now).ToString(), ClaimValueTypes.Integer64),
-                           new Claim("exp", EpochTime.GetIntDate(exp).ToString(), ClaimValueTypes.Integer64),
-                    },
-                signingCredentials: signingCredentials);
-            token.Header.Add("kid", _setting.KeyId);
+            var token = new SecurityTokenDescriptor
+            {
+                SigningCredentials = credentials,
+                Expires = exp,
+                IssuedAt = now,
+                Issuer = _teamId,
+                Audience = AppleJwtSettings.Audience,
+                Claims = new Dictionary<string, object>()
+                        {
+                            {"sub", _clientId}
+                        }
+            };
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return new JwtSecurityTokenHandler().CreateEncodedJwt(token);
         }
     }
 }

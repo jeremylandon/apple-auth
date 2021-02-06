@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Golap.AppleAuth.Tests", "te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C3316430-88C6-412C-9855-5238BC730DCD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{6DF82CB3-EDA4-430D-AA19-2B291B9EDA44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Golap.AppleAuth.Sample", "sample\Golap.AppleAuth.Sample\Golap.AppleAuth.Sample.csproj", "{36491EBD-9BD9-468D-9596-CC4DEFBF6FD1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,12 +27,17 @@ Global
 		{0611D038-7962-4830-80F8-97AFD129144A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0611D038-7962-4830-80F8-97AFD129144A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0611D038-7962-4830-80F8-97AFD129144A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36491EBD-9BD9-468D-9596-CC4DEFBF6FD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36491EBD-9BD9-468D-9596-CC4DEFBF6FD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36491EBD-9BD9-468D-9596-CC4DEFBF6FD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36491EBD-9BD9-468D-9596-CC4DEFBF6FD1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0611D038-7962-4830-80F8-97AFD129144A} = {C3316430-88C6-412C-9855-5238BC730DCD}
+		{36491EBD-9BD9-468D-9596-CC4DEFBF6FD1} = {6DF82CB3-EDA4-430D-AA19-2B291B9EDA44}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {472BDA37-FCBC-49A5-88DE-0BBB0DA53CEB}

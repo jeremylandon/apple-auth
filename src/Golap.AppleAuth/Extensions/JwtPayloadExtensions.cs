@@ -3,6 +3,9 @@ using Golap.AppleAuth.Entities;
 
 namespace Golap.AppleAuth.Extensions
 {
+    /// <summary>
+    /// Helpers to manage Apple Tokens
+    /// </summary>
     public static class JwtPayloadExtensions
     {
         /// <summary>

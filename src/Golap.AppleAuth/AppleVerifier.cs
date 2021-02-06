@@ -12,6 +12,9 @@ using Microsoft.IdentityModel.Tokens;
 namespace Golap.AppleAuth
 {
     /// <summary>
+    /// An implementation of <see cref="IAppleVerifier"/> to validate JWT Tokens send by apple during authentication
+    /// </summary>
+    /// <summary>
     /// Validates the JWT Tokens send by apple during authentication
     /// </summary>
     public class AppleVerifier : IAppleVerifier, IDisposable
@@ -32,9 +35,11 @@ namespace Golap.AppleAuth
             _httpClient = Guard.Argument(httpClient, nameof(httpClient)).NotNull();
         }
 
-        public async Task<SecurityToken> ValidateAsync(string token)
+        /// <inheritdoc/>
+        public async Task<SecurityToken> ValidateAsync(string token, string clientId)
         {
             Guard.Argument(token, nameof(token)).NotNull().NotWhiteSpace().Matches(@"^[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$");
+            Guard.Argument(clientId, nameof(clientId)).NotNull().NotWhiteSpace();
 
             var response = await _httpClient.GetAsync(ApplePublicKeysEndpoint);
             if (!response.IsSuccessStatusCode)
@@ -54,8 +59,8 @@ namespace Golap.AppleAuth
             var validationParameters = new TokenValidationParameters
             {
                 IssuerSigningKey = publicKey,
-                ValidateAudience = false,
-                ValidateIssuer = false,
+                ValidIssuer = AppleJwtSettings.Audience,
+                ValidAudience = clientId
             };
 
             tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
@@ -63,6 +68,7 @@ namespace Golap.AppleAuth
             return validatedToken;
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             _httpClient?.Dispose();

@@ -14,6 +14,9 @@ using Golap.AppleAuth.Utils;
 
 namespace Golap.AppleAuth
 {
+    /// <summary>
+    /// An implementation of <see cref="IAppleAuthClient"/> to interact with the Apple OAuth
+    /// </summary>
     public class AppleAuthClient : IAppleAuthClient, IDisposable
     {
         private const string AppleAuthTokenEndpoint = "https://appleid.apple.com/auth/token";
@@ -59,43 +62,46 @@ namespace Golap.AppleAuth
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
         }
 
-        public Uri LoginUri()
+        /// <inheritdoc/>
+        public Uri GetLoginUri()
         {
             var queryParams = new NameValueCollection
-                {
-                    ["response_type"] = "code id_token",
-                    ["client_id"] = _authSetting.ClientId,
-                    ["redirect_uri"] = _authSetting.RedirectUri,
-                    ["state"] = RandomUtils.CreateHexString(15),
-                    ["scope"] = _authSetting.Scope,
-                    ["response_mode"] = "form_post"
-                };
+            {
+                ["response_type"] = "code id_token",
+                ["client_id"] = _authSetting.ClientId,
+                ["redirect_uri"] = _authSetting.RedirectUri,
+                ["state"] = RandomUtils.CreateHexString(15),
+                ["scope"] = _authSetting.Scope,
+                ["response_mode"] = "form_post"
+            };
             var uriBuilder = new UriBuilder(AppleAuthAuthorizeEndpoint)
-                {
-                    Query = string.Join("&", (
+            {
+                Query = string.Join("&", (
                         from key in queryParams.AllKeys
                         from value in queryParams.GetValues(key)
                         select $"{HttpUtility.UrlEncode(key)}={HttpUtility.UrlEncode(value)}"
                     ).ToArray())
-                };
+            };
 
             return uriBuilder.Uri;
         }
 
-        public Task<AppleAccessToken> AccessTokenAsync(string code)
+        /// <inheritdoc/>
+        public Task<AppleAccessToken> GetAccessTokenAsync(string code)
         {
             var body = new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("grant_type", "authorization_code"),
                     new KeyValuePair<string, string>("code", code),
-                    new KeyValuePair<string, string>("redirect_uri", this._authSetting.RedirectUri),
-                    new KeyValuePair<string, string>("client_id", this._authSetting.ClientId),
-                    new KeyValuePair<string, string>("client_secret",_tokenGenerator.Generate()),
+                    new KeyValuePair<string, string>("redirect_uri", _authSetting.RedirectUri),
+                    new KeyValuePair<string, string>("client_id", _authSetting.ClientId),
+                    new KeyValuePair<string, string>("client_secret", _tokenGenerator.Generate()),
                 };
 
             return InternalPostAuthTokenRequestAsync(body);
         }
 
+        /// <inheritdoc/>
         public Task<AppleAccessToken> RefreshTokenAsync(string refreshToken)
         {
             var body = new List<KeyValuePair<string, string>>
@@ -104,7 +110,7 @@ namespace Golap.AppleAuth
                     new KeyValuePair<string, string>("refresh_token", refreshToken),
                     new KeyValuePair<string, string>("redirect_uri", _authSetting.RedirectUri),
                     new KeyValuePair<string, string>("client_id", _authSetting.ClientId),
-                    new KeyValuePair<string, string>("client_secret",_tokenGenerator.Generate()),
+                    new KeyValuePair<string, string>("client_secret", _tokenGenerator.Generate()),
                 };
 
             return InternalPostAuthTokenRequestAsync(body);
@@ -124,6 +130,7 @@ namespace Golap.AppleAuth
             });
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             _httpClient.Dispose();
