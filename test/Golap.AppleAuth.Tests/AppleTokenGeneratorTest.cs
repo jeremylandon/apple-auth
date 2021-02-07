@@ -27,7 +27,7 @@ namespace Golap.AppleAuth.Tests
             var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
             jwtToken.Issuer.Should().Be(_teamId);
             jwtToken.Subject.Should().Be(_clientId);
-            jwtToken.Audiences.Should().HaveCount(1).And.Contain(AppleJwtSettings.Audience);
+            jwtToken.Audiences.Should().HaveCount(1).And.Contain(AppleJwtSettings.Issuer);
         }
 
         [Fact]

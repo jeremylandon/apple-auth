@@ -2,6 +2,6 @@
 {
     internal class AppleJwtSettings
     {
-        public const string Audience = "https://appleid.apple.com";
+        public const string Issuer = "https://appleid.apple.com";
     }
 }

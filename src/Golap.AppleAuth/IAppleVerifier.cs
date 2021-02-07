@@ -10,6 +10,13 @@ namespace Golap.AppleAuth
     public interface IAppleVerifier
     {
         /// <summary>
+        /// Check the token validity without audience (ClientId) validation. Throw <see cref="AppleAuthException"/> if the token is invalid
+        /// </summary>
+        /// <returns>The recognized <see cref="SecurityToken"/></returns>
+        /// <exception cref="AppleAuthException"></exception>
+        Task<SecurityToken> ValidateAsync(string token);
+
+        /// <summary>
         /// Check the token validity. Throw <see cref="AppleAuthException"/> if the token is invalid
         /// </summary>
         /// <returns>The recognized <see cref="SecurityToken"/></returns>
