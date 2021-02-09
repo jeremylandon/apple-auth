@@ -58,7 +58,7 @@ namespace Golap.AppleAuth
                 Expires = exp,
                 IssuedAt = now,
                 Issuer = _teamId,
-                Audience = AppleJwtSettings.Audience,
+                Audience = AppleJwtSettings.Issuer,
                 Claims = new Dictionary<string, object>()
                         {
                             {"sub", _clientId}
